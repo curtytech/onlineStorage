@@ -1,0 +1,23 @@
+{
+  "name": "freeonlinestorage",
+  "module": "index.ts",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch index.ts",
+    "start": "bun run index.ts",
+    "migrate": "bun run src/db/migrate.ts",
+    "rollback": "bun run src/db/migrate.ts rollback"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.19"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}
