@@ -89,8 +89,7 @@ app.get("/health", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  const port = Number(process.env.PORT) || 3000;
-  const host = `http://localhost:${port}`;
+  const host = `http://onlinestorage.you.tec.br/`;
   const html = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
