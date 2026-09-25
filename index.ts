@@ -200,17 +200,14 @@ app.get("/", (req, res) => {
     </div>
 
     <div class="endpoint">
-      <span class="method get">GET</span><span class="path">/api/getbucket/:bucket</span>
-      <p class="desc">Retorna todas as chaves/valores de um bucket específico.</p>
+      <span class="method delete">DELETE</span><span class="path">/api/deletebucket/:bucket</span>
+      <span class="badge">ADMIN</span>
+      <p class="desc">Apaga todas as chaves de um bucket específico via path param.</p>
       <p class="params"><strong>Params:</strong> <code>:bucket</code> - nome do bucket</p>
+      <p class="params"><strong>Header:</strong> <code>admin-auth: {valor}</code></p>
     </div>
 
     <h2>Chaves (Keys)</h2>
-    <div class="endpoint">
-      <span class="method get">GET</span><span class="path">/api/getkey/:bucket/:key</span>
-      <p class="desc">Busca o valor de uma chave específica dentro de um bucket.</p>
-      <p class="params"><strong>Params:</strong> <code>:bucket</code>, <code>:key</code></p>
-    </div>
 
     <div class="endpoint">
       <span class="method post">POST</span><span class="path">/api/</span>
@@ -218,6 +215,18 @@ app.get("/", (req, res) => {
       <p class="params"><strong>Body JSON:</strong> <code>{"key": "nome", "value": "qualquer", "bucket?"}</code></p>
     </div>
 
+    <div class="endpoint">
+      <span class="method get">GET</span><span class="path">/api/getbucket/:bucket</span>
+      <p class="desc">Retorna todas as chaves/valores de um bucket específico.</p>
+      <p class="params"><strong>Params:</strong> <code>:bucket</code> - nome do bucket</p>
+    </div>
+
+    <div class="endpoint">
+      <span class="method get">GET</span><span class="path">/api/getkey/:bucket/:key</span>
+      <p class="desc">Busca o valor de uma chave específica dentro de um bucket.</p>
+      <p class="params"><strong>Params:</strong> <code>:bucket</code>, <code>:key</code></p>
+    </div>
+  
     <div class="endpoint">
       <span class="method get">GET</span><span class="path">/api/createkey/:bucket/:key/:value</span>
       <p class="desc">Cria ou atualiza uma chave diretamente via parâmetros na URL.</p>
@@ -228,12 +237,6 @@ app.get("/", (req, res) => {
       <span class="method delete">DELETE</span><span class="path">/api/deletekey/:bucket/:key</span>
       <p class="desc">Remove uma chave específica de um bucket.</p>
       <p class="params"><strong>Params:</strong> <code>:bucket</code>, <code>:key</code></p>
-    </div>
-
-    <div class="endpoint">
-      <span class="method delete">DELETE</span><span class="path">/api/</span>
-      <p class="desc">Apaga todas as chaves de um bucket (informa bucket via query ou body).</p>
-      <p class="params"><strong>Query/Body:</strong> <code>bucket</code></p>
     </div>
 
     <footer>
