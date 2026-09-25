@@ -42,7 +42,7 @@ function resolveBucket(source: { query?: any; body?: any; params?: any }): strin
   return DEFAULT_BUCKET;
 }
 
-router.get("/buckets", (req, res) => {
+router.get("/getallbuckets", (req, res) => {
 
   const adminAuth = req.headers["admin-auth"];
   if (adminAuth !== process.env.ADMIN_AUTH) {
@@ -131,7 +131,7 @@ router.get("/buckets", (req, res) => {
 //   });
 // });
 
-router.get("/", (req, res) => {
+router.get("/getbucket/:bucket", (req, res) => {
   const bucket = resolveBucket(req);
 
   const rows = db
@@ -156,7 +156,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.get("/:bucket/:key", (req, res) => {
+router.get("/getkey/:bucket/:key", (req, res) => {
   const bucket = resolveBucket(req);
   const key = req.params.key;
 
@@ -226,7 +226,53 @@ router.post("/", (req, res) => {
   });
 });
 
-router.delete("/:key", (req, res) => {
+router.get("/createkey/:bucket/:key/:value", (req, res) => {
+  const bucket = req.params.bucket || DEFAULT_BUCKET;
+  const key = req.params.key;
+  const value = req.params.value;
+
+  if (!key || String(key).trim() === "") {
+    return res.status(400).json({ error: "'key' é obrigatória" });
+  }
+  if (value === undefined) {
+    return res.status(400).json({ error: "'value' é obrigatório" });
+  }
+
+  const serialized = serializeValue(value);
+  const size = byteLength(serialized);
+
+  const existing = db
+    .query("SELECT id FROM key_values WHERE bucket = ? AND key = ?")
+    .get(bucket, String(key)) as any;
+
+  if (existing) {
+    db.query(
+      "UPDATE key_values SET value = ?, size = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+    ).run(serialized, size, existing.id);
+  } else {
+    db.query(
+      "INSERT INTO key_values (bucket, key, value, size) VALUES (?, ?, ?, ?)"
+    ).run(bucket, String(key), serialized, size);
+  }
+
+  const row = db
+    .query(
+      "SELECT bucket, key, value, size, created_at, updated_at FROM key_values WHERE bucket = ? AND key = ?"
+    )
+    .get(bucket, String(key)) as any;
+
+  res.status(existing ? 200 : 201).json({
+    bucket: row.bucket,
+    key: row.key,
+    value: parseValue(row.value),
+    size: Number(row.size || 0),
+    size_human: formatBytes(Number(row.size || 0)),
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  });
+});
+
+router.delete("/deletekey/:bucket/:key", (req, res) => {
   const bucket = resolveBucket(req);
   const key = req.params.key;
 
