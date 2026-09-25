@@ -71,65 +71,65 @@ router.get("/buckets", (req, res) => {
   res.json({ buckets, total: buckets.length });
 });
 
-router.post("/batch", (req, res) => {
-  const bucket = resolveBucket(req);
-  const data = req.body;
+// router.post("/batch", (req, res) => {
+//   const bucket = resolveBucket(req);
+//   const data = req.body;
 
-  if (!data || typeof data !== "object" || Array.isArray(data)) {
-    return res.status(400).json({ error: "Body deve ser um objeto { key: value, ... }" });
-  }
+//   if (!data || typeof data !== "object" || Array.isArray(data)) {
+//     return res.status(400).json({ error: "Body deve ser um objeto { key: value, ... }" });
+//   }
 
-  const entries = Object.entries(data).filter(([k]) => {
-    if (k === "bucket") return false;
-    return true;
-  });
+//   const entries = Object.entries(data).filter(([k]) => {
+//     if (k === "bucket") return false;
+//     return true;
+//   });
 
-  if (entries.length === 0) {
-    return res.status(400).json({ error: "Nenhum par chave/valor informado" });
-  }
+//   if (entries.length === 0) {
+//     return res.status(400).json({ error: "Nenhum par chave/valor informado" });
+//   }
 
-  const tx = db.transaction(() => {
-    for (const [key, value] of entries) {
-      const serialized = serializeValue(value);
-      const size = byteLength(serialized);
-      const existing = db
-        .query("SELECT id FROM key_values WHERE bucket = ? AND key = ?")
-        .get(bucket, key) as any;
+//   const tx = db.transaction(() => {
+//     for (const [key, value] of entries) {
+//       const serialized = serializeValue(value);
+//       const size = byteLength(serialized);
+//       const existing = db
+//         .query("SELECT id FROM key_values WHERE bucket = ? AND key = ?")
+//         .get(bucket, key) as any;
 
-      if (existing) {
-        db.query(
-          "UPDATE key_values SET value = ?, size = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
-        ).run(serialized, size, existing.id);
-      } else {
-        db.query(
-          "INSERT INTO key_values (bucket, key, value, size) VALUES (?, ?, ?, ?)"
-        ).run(bucket, key, serialized, size);
-      }
-    }
-  });
-  tx();
+//       if (existing) {
+//         db.query(
+//           "UPDATE key_values SET value = ?, size = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+//         ).run(serialized, size, existing.id);
+//       } else {
+//         db.query(
+//           "INSERT INTO key_values (bucket, key, value, size) VALUES (?, ?, ?, ?)"
+//         ).run(bucket, key, serialized, size);
+//       }
+//     }
+//   });
+//   tx();
 
-  const rows = db
-    .query(
-      "SELECT key, value, size, created_at, updated_at FROM key_values WHERE bucket = ? ORDER BY updated_at DESC"
-    )
-    .all(bucket) as any[];
+//   const rows = db
+//     .query(
+//       "SELECT key, value, size, created_at, updated_at FROM key_values WHERE bucket = ? ORDER BY updated_at DESC"
+//     )
+//     .all(bucket) as any[];
 
-  const obj: Record<string, any> = {};
-  let totalBytes = 0;
-  for (const row of rows) {
-    obj[row.key] = parseValue(row.value);
-    totalBytes += Number(row.size || 0);
-  }
+//   const obj: Record<string, any> = {};
+//   let totalBytes = 0;
+//   for (const row of rows) {
+//     obj[row.key] = parseValue(row.value);
+//     totalBytes += Number(row.size || 0);
+//   }
 
-  res.status(200).json({
-    bucket,
-    data: obj,
-    count: rows.length,
-    total_size: totalBytes,
-    total_size_human: formatBytes(totalBytes),
-  });
-});
+//   res.status(200).json({
+//     bucket,
+//     data: obj,
+//     count: rows.length,
+//     total_size: totalBytes,
+//     total_size_human: formatBytes(totalBytes),
+//   });
+// });
 
 router.get("/", (req, res) => {
   const bucket = resolveBucket(req);
@@ -156,7 +156,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.get("/:key", (req, res) => {
+router.get("/:bucket/:key", (req, res) => {
   const bucket = resolveBucket(req);
   const key = req.params.key;
 
