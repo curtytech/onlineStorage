@@ -88,6 +88,164 @@ app.get("/health", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  const port = Number(process.env.PORT) || 3000;
+  const host = `http://localhost:${port}`;
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeOnlineStorage - API Docs</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; color: #38bdf8; }
+    .subtitle { color: #94a3b8; margin-bottom: 2rem; }
+    .info-card {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      border-left: 4px solid #38bdf8;
+    }
+    .info-card p { margin-bottom: 0.5rem; line-height: 1.6; }
+    .info-card code {
+      background: #334155;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    h2 {
+      font-size: 1.25rem;
+      margin: 1.5rem 0 1rem;
+      color: #f8fafc;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 0.5rem;
+    }
+    .endpoint {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .method {
+      display: inline-block;
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-right: 0.75rem;
+      text-transform: uppercase;
+    }
+    .method.get { background: #166534; color: #bbf7d0; }
+    .method.post { background: #1e40af; color: #bfdbfe; }
+    .method.delete { background: #991b1b; color: #fecaca; }
+    .path { font-family: monospace; font-size: 1rem; color: #fbbf24; }
+    .desc { margin-top: 0.5rem; color: #cbd5e1; font-size: 0.92rem; line-height: 1.5; }
+    .params { margin-top: 0.5rem; font-size: 0.85rem; color: #94a3b8; }
+    .params strong { color: #e2e8f0; }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #7c3aed;
+      color: #e9d5ff;
+      margin-left: 0.5rem;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>FreeOnlineStorage API</h1>
+    <p class="subtitle">Sistema de armazenamento Key-Value online (tipo localStorage)</p>
+
+    <div class="info-card">
+      <p><strong>Base URL da API:</strong> <code>${host}/api</code></p>
+      <p><strong>Bucket padrão:</strong> <code>default</code></p>
+      <p><strong>Como especificar bucket:</strong> escolha 1 forma:
+        (1) query <code>?bucket=nome</code> |
+        (2) body JSON <code>{"bucket": "nome"}</code> |
+        (3) path param <code>/:bucket/...</code>
+      </p>
+      <p><strong>Admin Auth:</strong> algumas rotas requerem header <code>admin-auth</code> com o valor de <code>ADMIN_AUTH</code> do .env</p>
+    </div>
+
+    <h2>Saúde do Sistema</h2>
+    <div class="endpoint">
+      <span class="method get">GET</span><span class="path">/health</span>
+      <p class="desc">Verifica status do servidor, uptime e timestamp.</p>
+    </div>
+
+    <h2>Buckets (Admin)</h2>
+    <div class="endpoint">
+      <span class="method get">GET</span><span class="path">/api/getallbuckets</span>
+      <span class="badge">ADMIN</span>
+      <p class="desc">Lista todos os buckets com contagem de itens e tamanho total.</p>
+      <p class="params"><strong>Header:</strong> <code>admin-auth: {valor}</code></p>
+    </div>
+
+    <div class="endpoint">
+      <span class="method get">GET</span><span class="path">/api/getbucket/:bucket</span>
+      <p class="desc">Retorna todas as chaves/valores de um bucket específico.</p>
+      <p class="params"><strong>Params:</strong> <code>:bucket</code> - nome do bucket</p>
+    </div>
+
+    <h2>Chaves (Keys)</h2>
+    <div class="endpoint">
+      <span class="method get">GET</span><span class="path">/api/getkey/:bucket/:key</span>
+      <p class="desc">Busca o valor de uma chave específica dentro de um bucket.</p>
+      <p class="params"><strong>Params:</strong> <code>:bucket</code>, <code>:key</code></p>
+    </div>
+
+    <div class="endpoint">
+      <span class="method post">POST</span><span class="path">/api/</span>
+      <p class="desc">Cria ou atualiza uma chave/valor via corpo JSON.</p>
+      <p class="params"><strong>Body JSON:</strong> <code>{"key": "nome", "value": "qualquer", "bucket?"}</code></p>
+    </div>
+
+    <div class="endpoint">
+      <span class="method get">GET</span><span class="path">/api/createkey/:bucket/:key/:value</span>
+      <p class="desc">Cria ou atualiza uma chave diretamente via parâmetros na URL.</p>
+      <p class="params"><strong>Params:</strong> <code>:bucket</code>, <code>:key</code>, <code>:value</code></p>
+    </div>
+
+    <div class="endpoint">
+      <span class="method delete">DELETE</span><span class="path">/api/deletekey/:bucket/:key</span>
+      <p class="desc">Remove uma chave específica de um bucket.</p>
+      <p class="params"><strong>Params:</strong> <code>:bucket</code>, <code>:key</code></p>
+    </div>
+
+    <div class="endpoint">
+      <span class="method delete">DELETE</span><span class="path">/api/</span>
+      <p class="desc">Apaga todas as chaves de um bucket (informa bucket via query ou body).</p>
+      <p class="params"><strong>Query/Body:</strong> <code>bucket</code></p>
+    </div>
+
+    <footer>
+      FreeOnlineStorage &mdash; Rodando em ${host}
+    </footer>
+  </div>
+</body>
+</html>`;
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.send(html);
+});
+
 app.use("/api", apiRoutes);
 
 app.use((req, res) => {
