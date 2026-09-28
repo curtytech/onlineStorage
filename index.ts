@@ -245,6 +245,11 @@ app.get("/", (req, res) => {
 
     <footer>
       FreeOnlineStorage &mdash; Rodando em ${host}
+      <p>
+        © ${new Date().getFullYear()} OnlineStorage. Todos os direitos reservados.
+        <br>
+        Criado por Phelipe Curty em ${new Date().toLocaleDateString()}
+      </p>
     </footer>
   </div>
 </body>
