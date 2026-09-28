@@ -174,7 +174,7 @@ app.get("/", (req, res) => {
     <p class="subtitle">Sistema de armazenamento Key-Value online (tipo localStorage)</p>
 
     <div class="info-card">
-      <p><strong>Base URL da API:</strong> <code>${host}/api</code></p>
+      <p><strong>Base URL da API:</strong> <code>${host}api</code></p>
       <p><strong>Bucket padrão:</strong> <code>default</code></p>
       <p><strong>Como especificar bucket:</strong> escolha 1 forma:
         (1) query <code>?bucket=nome</code> |
@@ -274,8 +274,7 @@ async function start() {
   app.listen(PORT, HOST, () => {
     console.log(`[Servidor] Rodando em http://${HOST === "0.0.0.0" ? "localhost" : HOST}:${PORT}`);
     console.log(`[Saúde]    GET  http://localhost:${PORT}/health`);
-    console.log(`[API]      GET  http://localhost:${PORT}/api`);
-    console.log(`[Storage]  GET  http://localhost:${PORT}/api/storage`);
+    console.log(`[API]      GET  http://localhost:${PORT}/api/`);
     // console.log(`[Buckets]  GET  http://localhost:${PORT}/api/storage/buckets`);
     console.log("");
   });
