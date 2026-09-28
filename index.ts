@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import apiRoutes from "./src/routes";
 import { runMigrations } from "./src/db/migrate";
+import { validateEnv, setupDirectories } from "./src/setup";
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || "0.0.0.0";
@@ -266,6 +267,10 @@ async function start() {
   console.log("  FreeOnlineStorage API");
   console.log("========================================\n");
 
+  console.log("[Setup] Validando variáveis de ambiente...");
+  validateEnv();
+  console.log("[Setup] Garantindo diretórios...");
+  setupDirectories();
   console.log("[Setup] Executando migrations...");
   await runMigrations();
 

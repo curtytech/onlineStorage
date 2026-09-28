@@ -6,8 +6,12 @@
   "scripts": {
     "dev": "bun run --watch index.ts",
     "start": "bun run index.ts",
+    "build": "bun build index.ts --outdir dist --target bun",
     "migrate": "bun run src/db/migrate.ts",
-    "rollback": "bun run src/db/migrate.ts rollback"
+    "rollback": "bun run src/db/migrate.ts rollback",
+    "setup": "bun run src/setup.ts && bun run migrate",
+    "start:prod": "NODE_ENV=production bun run setup && bun run index.ts",
+    "serve": "NODE_ENV=production bun run build && bun run setup && bun dist/index.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
