@@ -187,8 +187,10 @@ app.get("/", (req, res) => {
 
     <h2>Saúde do Sistema</h2>
     <div class="endpoint">
-      <span class="method get">GET</span><span class="path">/health</span>
-      <p class="desc">Verifica status do servidor, uptime e timestamp.</p>
+      <a href="${host}health" target="_blank">
+        <span class="method get">GET</span><span class="path">/health</span>
+        <p class="desc">Verifica status do servidor, uptime e timestamp.</p>
+      </a>
     </div>
 
     <h2>Buckets (Admin)</h2>
@@ -216,9 +218,11 @@ app.get("/", (req, res) => {
     </div>
 
     <div class="endpoint">
-      <span class="method get">GET</span><span class="path">/api/getbucket/:bucket</span>
-      <p class="desc">Retorna todas as chaves/valores de um bucket específico.</p>
-      <p class="params"><strong>Params:</strong> <code>:bucket</code> - nome do bucket</p>
+      <a href="${host}api/getbucket/default" target="_blank">
+        <span class="method get">GET</span><span class="path">/api/getbucket/:bucket</span>
+        <p class="desc">Retorna todas as chaves/valores de um bucket específico.</p>
+        <p class="params"><strong>Params:</strong> <code>:bucket</code> - nome do bucket</p>
+      </a>
     </div>
 
     <div class="endpoint">
