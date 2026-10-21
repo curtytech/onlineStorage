@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import apiRoutes from "./src/routes";
+import filesRouter from "./src/routes/files";
 import { runMigrations } from "./src/db/migrate";
 import { validateEnv, setupDirectories } from "./src/setup";
 
@@ -11,6 +12,7 @@ const MAX_BODY_BYTES = 100 * 1024 * 1024;
 const app = express();
 
 app.use(cors());
+app.use("/files", filesRouter);
 
 app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 
@@ -191,6 +193,14 @@ app.get("/", (req, res) => {
         <span class="method get">GET</span><span class="path">/health</span>
         <p class="desc">Verifica status do servidor, uptime e timestamp.</p>
       </a>
+    </div>
+
+    <h2>Arquivos</h2>
+    <div class="endpoint">
+      <span class="method post">POST</span><span class="path">/files</span>
+      <p class="desc">Envia um arquivo de qualquer tipo. O conteúdo é recebido como corpo binário e salvo no diretório configurado por <code>UPLOAD_DIR</code>.</p>
+      <p class="params"><strong>Limite:</strong> menos de 1 GiB. <strong>Nome original:</strong> header <code>X-File-Name</code> ou query <code>?filename=nome.ext</code>.</p>
+      <p class="params"><strong>Resposta:</strong> identificador, nome original, tamanho em bytes e tipo de conteúdo. O arquivo é armazenado com um nome seguro gerado pelo servidor.</p>
     </div>
 
     <h2>Buckets (Admin)</h2>

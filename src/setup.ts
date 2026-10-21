@@ -33,8 +33,12 @@ export function validateEnv() {
 
 export function setupDirectories() {
   const dataDir = ensureDir(process.env.DB_PATH ? dirname(resolve(ROOT, process.env.DB_PATH)) : "./data");
-  const uploadDir = ensureDir(process.env.UPLOAD_DIR || "./uploads");
+  const uploadDir = setupUploadDirectory();
   return { dataDir, uploadDir };
+}
+
+export function setupUploadDirectory() {
+  return ensureDir(process.env.UPLOAD_DIR || "./uploads");
 }
 
 if (import.meta.main) {
