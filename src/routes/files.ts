@@ -4,6 +4,7 @@ import { unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { Transform } from "node:stream";
 import { Router } from "express";
+import db from "../db/connection";
 import { setupUploadDirectory } from "../setup";
 
 const MAX_UPLOAD_BYTES = 1024 ** 3 - 1;
@@ -16,6 +17,21 @@ class UploadTooLargeError extends Error {
 }
 
 const router = Router();
+
+router.get("/getall", (req, res) => {
+  const adminAuth = req.get("admin-auth");
+  if (!process.env.ADMIN_AUTH || adminAuth !== process.env.ADMIN_AUTH) {
+    return res.status(403).json({ error: "Admin auth inválida Crie o Header admin-auth e informe o valor correto" });
+  }
+
+  const uploads = db
+    .query(
+      "SELECT id, original_name, password, size, content_type, created_at FROM uploads ORDER BY created_at DESC"
+    )
+    .all();
+
+  res.json({ uploads, total: uploads.length });
+});
 
 router.post("/", (req, res, next) => {
   const contentLength = Number(req.headers["content-length"]);
@@ -80,11 +96,27 @@ router.post("/", (req, res, next) => {
   output.on("finish", () => {
     if (settled) return;
     settled = true;
+    const contentType = req.get("content-type") || "application/octet-stream";
+
+    try {
+      db.query(
+        "INSERT INTO uploads (id, original_name, size, content_type) VALUES (?, ?, ?, ?)"
+      ).run(id, originalName, size, contentType);
+    } catch (error) {
+      void unlink(filePath).catch((cleanupError: NodeJS.ErrnoException) => {
+        if (cleanupError.code !== "ENOENT") {
+          console.error("[Upload] Falha ao remover arquivo sem registro:", cleanupError);
+        }
+      });
+      next(error);
+      return;
+    }
+
     res.status(201).json({
       id,
       originalName,
       size,
-      contentType: req.get("content-type") || "application/octet-stream",
+      contentType,
     });
   });
 

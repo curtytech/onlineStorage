@@ -26,3 +26,5 @@ curl -X POST http://localhost:3000/files \
 ```
 
 O nome original pode ser informado no header `X-File-Name` ou pela query `?filename=documento.pdf`. A resposta `201` inclui `id`, `originalName`, `size` e `contentType`.
+
+Para listar os uploads registrados, use `GET /files/getall` com o header `admin-auth` configurado pela variável `ADMIN_AUTH`. A resposta inclui os metadados dos arquivos e o total de registros.

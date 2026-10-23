@@ -203,6 +203,13 @@ app.get("/", (req, res) => {
       <p class="params"><strong>Resposta:</strong> identificador, nome original, tamanho em bytes e tipo de conteúdo. O arquivo é armazenado com um nome seguro gerado pelo servidor.</p>
     </div>
 
+    <div class="endpoint">
+      <span class="method get">GET</span><span class="path">/files/getall</span>
+      <span class="badge">ADMIN</span>
+      <p class="desc">Lista os uploads registrados e seus metadados.</p>
+      <p class="params"><strong>Header:</strong> <code>admin-auth: {valor}</code></p>
+    </div>
+
     <h2>Buckets (Admin)</h2>
     <div class="endpoint">
       <span class="method get">GET</span><span class="path">/api/getallbuckets</span>
