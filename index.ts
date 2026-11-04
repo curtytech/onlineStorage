@@ -198,16 +198,20 @@ app.get("/", (req, res) => {
     <h2>Arquivos</h2>
     <div class="endpoint">
       <span class="method post">POST</span><span class="path">/files</span>
-      <p class="desc">Envia um arquivo de qualquer tipo. O conteúdo é recebido como corpo binário e salvo no diretório configurado por <code>UPLOAD_DIR</code>.</p>
-      <p class="params"><strong>Limite:</strong> menos de 1 GiB. <strong>Nome original:</strong> header <code>X-File-Name</code> ou query <code>?filename=nome.ext</code>.</p>
-      <p class="params"><strong>Resposta:</strong> identificador, nome original, tamanho em bytes e tipo de conteúdo. O arquivo é armazenado com um nome seguro gerado pelo servidor.</p>
+      <p class="desc">Envia um arquivo de qualquer tipo usando <code>multipart/form-data</code>. Inclua o arquivo no campo <code>file</code>. O arquivo é salvo no diretório configurado por <code>UPLOAD_DIR</code>.</p>
+      <p class="params"><strong>Nome original:</strong> usa o nome enviado no formulário; opcionalmente, pode ser substituído pelo header <code>X-File-Name</code> ou pela query <code>?filename=nome.ext</code>. O tipo de conteúdo vem da parte do arquivo no formulário.</p>
+      <p class="params"><strong>Limite:</strong> menos de 1 GiB. O nome do arquivo deve ter no máximo 255 caracteres.</p>
+      <p class="params"><strong>Exemplo:</strong> <code>curl -X POST "${host}files" -F "file=@arquivo.pdf"</code></p>
+      <p class="params"><strong>Sucesso (201):</strong> retorna <code>{"id":"...","originalName":"arquivo.pdf","size":1234,"contentType":"application/pdf"}</code>. Erros: <code>400</code> para formulário inválido ou nome muito longo e <code>413</code> para arquivo acima do limite.</p>
     </div>
 
     <div class="endpoint">
       <span class="method get">GET</span><span class="path">/files/getall</span>
       <span class="badge">ADMIN</span>
       <p class="desc">Lista os uploads registrados e seus metadados.</p>
-      <p class="params"><strong>Header:</strong> <code>admin-auth: {valor}</code></p>
+      <p class="params"><strong>Header obrigatório:</strong> <code>admin-auth: {valor de ADMIN_AUTH}</code></p>
+      <p class="params"><strong>Exemplo:</strong> <code>curl "${host}files/getall" -H "admin-auth: SEU_ADMIN_AUTH"</code></p>
+      <p class="params"><strong>Resposta:</strong> objeto com <code>uploads</code> (lista de metadados) e <code>total</code>. Sem autenticação válida, retorna <code>403</code>.</p>
     </div>
 
     <h2>Buckets (Admin)</h2>
