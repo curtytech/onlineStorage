@@ -29,6 +29,9 @@ class MultipartFileParser extends Transform {
   private readonly initialBoundary: Buffer;
   private readonly bodyBoundary: Buffer;
   private currentPartIsFile = false;
+  private currentFieldName: string | undefined;
+  private currentFieldData = Buffer.alloc(0);
+  readonly fields: Record<string, string> = {};
   fileName: string | undefined;
   contentType = "application/octet-stream";
   private fileSize = 0;
@@ -102,6 +105,7 @@ class MultipartFileParser extends Transform {
           }
 
           this.writeFileData(this.buffer.subarray(0, boundaryIndex));
+          this.finishCurrentField();
           this.buffer = this.buffer.subarray(boundaryIndex + this.bodyBoundary.length);
           this.phase = "suffix";
         } else {
@@ -148,6 +152,8 @@ class MultipartFileParser extends Transform {
     const fileName = getParameter("filename");
 
     this.currentPartIsFile = false;
+    this.currentFieldName = undefined;
+    this.currentFieldData = Buffer.alloc(0);
     if (fileName !== undefined && fileName.length > 0) {
       if (fieldName !== "file") {
         throw new InvalidMultipartError("Envie o arquivo no campo 'file'");
@@ -158,16 +164,33 @@ class MultipartFileParser extends Transform {
       this.fileName = fileName;
       this.contentType = headers.get("content-type") || "application/octet-stream";
       this.currentPartIsFile = true;
+    } else if (fieldName) {
+      this.currentFieldName = fieldName;
     }
   }
 
   private writeFileData(data: Buffer) {
-    if (!this.currentPartIsFile || data.length === 0) return;
+    if (data.length === 0) return;
+    if (!this.currentPartIsFile) {
+      if (this.currentFieldName && this.currentFieldData.length + data.length > 64 * 1024) {
+        throw new InvalidMultipartError("O campo do formulário é muito grande");
+      }
+      if (this.currentFieldName) {
+        this.currentFieldData = Buffer.concat([this.currentFieldData, data]);
+      }
+      return;
+    }
     this.fileSize += data.length;
     if (this.fileSize > MAX_UPLOAD_BYTES) {
       throw new UploadTooLargeError();
     }
     this.push(data);
+  }
+
+  private finishCurrentField() {
+    if (this.currentFieldName) {
+      this.fields[this.currentFieldName] = this.currentFieldData.toString("utf8");
+    }
   }
 }
 
@@ -201,8 +224,6 @@ router.post("/", (req, res, next) => {
     return res.status(400).json({ error: "O boundary do formulário multipart é inválido" });
   }
 
-  const password = req.body?.password ?? null;
-  
   const requestedName =
     req.get("x-file-name") ||
     (typeof req.query.filename === "string" ? req.query.filename : undefined);
@@ -259,7 +280,8 @@ router.post("/", (req, res, next) => {
       return;
     }
     settled = true;
-    const contentType = parser.contentType;
+    const contentType = parser.contentType;     
+    const password = parser.fields.password ?? null;
 
     try {
       db.query(
