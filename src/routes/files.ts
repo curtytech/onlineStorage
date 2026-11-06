@@ -201,7 +201,7 @@ router.post("/", (req, res, next) => {
     return res.status(400).json({ error: "O boundary do formulário multipart é inválido" });
   }
 
-  const password = req.body.password;
+  const password = req.body?.password ?? null;
   
   const requestedName =
     req.get("x-file-name") ||
