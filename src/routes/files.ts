@@ -201,6 +201,8 @@ router.post("/", (req, res, next) => {
     return res.status(400).json({ error: "O boundary do formulário multipart é inválido" });
   }
 
+  const password = req.body.password;
+  
   const requestedName =
     req.get("x-file-name") ||
     (typeof req.query.filename === "string" ? req.query.filename : undefined);
@@ -261,8 +263,8 @@ router.post("/", (req, res, next) => {
 
     try {
       db.query(
-        "INSERT INTO uploads (id, original_name, size, content_type) VALUES (?, ?, ?, ?)"
-      ).run(id, originalName, size, contentType);
+        "INSERT INTO uploads (id, original_name, password, size, content_type) VALUES (?, ?, ?, ?, ?)"
+      ).run(id, originalName, password, size, contentType);
     } catch (error) {
       void unlink(filePath).catch((cleanupError: NodeJS.ErrnoException) => {
         if (cleanupError.code !== "ENOENT") {
@@ -276,6 +278,7 @@ router.post("/", (req, res, next) => {
     res.status(201).json({
       id,
       originalName,
+      password,
       size,
       contentType,
     });
