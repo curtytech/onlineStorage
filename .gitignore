@@ -12,6 +12,9 @@ lerna-debug.log*
 .data/
 ./db
 
+./data/database.sqlite-shm
+./data/database.sqlite-wal
+
 # Caches
 
 .cache
