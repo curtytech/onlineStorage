@@ -28,3 +28,5 @@ curl -X POST http://localhost:3000/files \
 O nome original pode ser informado no header `X-File-Name` ou pela query `?filename=documento.pdf`. A resposta `201` inclui `id`, `originalName`, `size` e `contentType`.
 
 Para listar os uploads registrados, use `GET /files/getall` com o header `admin-auth` configurado pela variável `ADMIN_AUTH`. A resposta inclui os metadados dos arquivos e o total de registros.
+
+Uploads são removidos automaticamente do banco de dados e da pasta `UPLOAD_DIR` após 24 horas. A limpeza é executada na inicialização e depois a cada hora.

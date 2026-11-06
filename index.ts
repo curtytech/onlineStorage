@@ -4,6 +4,7 @@ import apiRoutes from "./src/routes";
 import filesRouter from "./src/routes/files";
 import { runMigrations } from "./src/db/migrate";
 import { validateEnv, setupDirectories } from "./src/setup";
+import { startUploadCleanup } from "./src/services/cleanupUploads";
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || "0.0.0.0";
@@ -303,6 +304,7 @@ async function start() {
   setupDirectories();
   console.log("[Setup] Executando migrations...");
   await runMigrations();
+  startUploadCleanup();
 
   console.log("");
 
