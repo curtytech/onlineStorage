@@ -12,7 +12,7 @@ lerna-debug.log*
 /data/
 ./db
 
-./uploads
+/uploads
 
 # Caches
 
