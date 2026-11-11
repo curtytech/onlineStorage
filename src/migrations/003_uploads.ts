@@ -14,6 +14,7 @@ export default {
     `);
   },
 
+  // teste
   down(db: Database) {
     db.run("DROP TABLE IF EXISTS uploads");
   },
