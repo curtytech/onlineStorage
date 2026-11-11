@@ -29,4 +29,6 @@ O nome original pode ser informado no header `X-File-Name` ou pela query `?filen
 
 Para listar os uploads registrados, use `GET /files/getall` com o header `admin-auth` configurado pela variável `ADMIN_AUTH`. A resposta inclui os metadados dos arquivos e o total de registros.
 
+Para baixar um arquivo pelo identificador retornado no upload, use `GET /files/:id`. O arquivo é enviado como download com o nome original; se o ID não existir, a rota retorna `404`.
+
 Uploads são removidos automaticamente do banco de dados e da pasta `UPLOAD_DIR` após 24 horas. A limpeza é executada na inicialização e depois a cada hora.

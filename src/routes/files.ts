@@ -211,6 +211,32 @@ router.get("/getall", (req, res) => {
   res.json({ uploads, total: uploads.length });
 });
 
+router.get("/:id", (req, res, next) => {
+  const upload = db
+    .query<{ id: string; original_name: string; content_type: string }, [string]>(
+      "SELECT id, original_name, content_type FROM uploads WHERE id = ?"
+    )
+    .get(req.params.id);
+
+  if (!upload) {
+    return res.status(404).json({ error: "Arquivo não encontrado" });
+  }
+
+  res.download(
+    join(setupUploadDirectory(), upload.id),
+    upload.original_name,
+    { headers: { "Content-Type": upload.content_type } },
+    (error) => {
+      if (!error) return;
+      if (res.headersSent) return next(error);
+      if ("code" in error && error.code === "ENOENT") {
+        return res.status(404).json({ error: "Arquivo não encontrado" });
+      }
+      next(error);
+    }
+  );
+});
+
 router.post("/", (req, res, next) => {
   const contentTypeHeader = req.get("content-type") || "";
   const boundary = /(?:^|;)\s*boundary=(?:"([^"]+)"|([^;]+))/i.exec(contentTypeHeader);

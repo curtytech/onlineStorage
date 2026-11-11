@@ -215,6 +215,12 @@ app.get("/", (req, res) => {
       <p class="params"><strong>Resposta:</strong> objeto com <code>uploads</code> (lista de metadados) e <code>total</code>. Sem autenticação válida, retorna <code>403</code>.</p>
     </div>
 
+    <div class="endpoint">
+      <span class="method get">GET</span><span class="path">/files/:id</span>
+      <p class="desc">Baixa o arquivo identificado pelo ID retornado no upload, usando o nome original. Retorna <code>404</code> se o arquivo não existir.</p>
+      <p class="params"><strong>Exemplo:</strong> <code>curl -OJ "${host}files/ID_DO_ARQUIVO"</code></p>
+    </div>
+
     <h2>Buckets (Admin)</h2>
     <div class="endpoint">
       <span class="method get">GET</span><span class="path">/api/getallbuckets</span>
